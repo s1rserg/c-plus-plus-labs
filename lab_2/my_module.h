@@ -24,6 +24,18 @@ public:
         date_of_birth = "";
     }
 
+    void setName(string &name1) {
+        name = name1;
+    }
+
+    void setGroup(string &group1) {
+        group = group1;
+    }
+
+    void setDate_of_birth(string &date1) {
+        date_of_birth = date1;
+    }
+
     string getName() {
         return name;
     }
@@ -36,7 +48,7 @@ public:
         return date_of_birth;
     }
 
-    void input(Student &student, int counter);
+    void input(int counter);
 
     void output();
 

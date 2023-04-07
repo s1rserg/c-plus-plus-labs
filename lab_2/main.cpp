@@ -13,7 +13,7 @@ int main() {
     }
     cin.ignore();
     Student students[n];
-    for(int i = 0; i < n; i++) students[i].input(students[i], i);
+    for(int i = 0; i < n; i++) students[i].input(i);
     students[0].findOldestStudent(students, n);
     return 0;
 }

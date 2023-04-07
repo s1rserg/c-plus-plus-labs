@@ -48,7 +48,7 @@ bool isValidDate(string &date) {
     return true;
 }
 
-void Student::input(Student &student, int counter) {
+void Student::input(int counter) {
     string s_name, s_group, s_dob;
 
     cout << "Enter data about student N" << counter + 1 << endl;
@@ -73,7 +73,9 @@ void Student::input(Student &student, int counter) {
         getline(cin, s_dob);
         if (isValidDate(s_dob)) break;
     }
-    student = Student(s_name, s_group, s_dob);
+    this->setName(s_name);
+    this->setGroup(s_group);
+    this->setDate_of_birth(s_dob);
 }
 
 void Student::output() {
