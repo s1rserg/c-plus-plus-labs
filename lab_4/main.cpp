@@ -1,5 +1,6 @@
 #include "my_module.h"
 
+
 int main() {
     int industrial, food;
     while (true) {

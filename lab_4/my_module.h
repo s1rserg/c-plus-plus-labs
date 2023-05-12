@@ -46,6 +46,8 @@ public:
 
     void input(int counter);
 
+    void set(Product &product);
+
     void output();
 };
 
@@ -58,6 +60,8 @@ public:
     static void expiredFoodValue(FoodProduct *products, int count);
 
     void input(int counter);
+
+    void set(Product &product);
 
     void output();
 };

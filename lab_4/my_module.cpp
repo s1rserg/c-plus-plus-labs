@@ -108,12 +108,14 @@ void Product::input() {
             cout << "You entered empty string. Please, try again." << endl;
         } else break;
     }
+    name = inName;
 
     while (true) {
         cout << "Production date (DD/MM/YYYY): ";
         getline(cin, inDate);
         if (isValidDate(inDate)) break;
     }
+    productionDate = inDate;
 
     while (true) {
         cout << "Price: ";
@@ -125,6 +127,7 @@ void Product::input() {
         } else break;
     }
     cin.ignore();
+    price = inPrice;
 
     while (true) {
         cout << "Quantity: ";
@@ -136,10 +139,6 @@ void Product::input() {
         } else break;
     }
     cin.ignore();
-
-    name = inName;
-    productionDate = inDate;
-    price = inPrice;
     quantity = inQuantity;
 }
 
@@ -167,13 +166,14 @@ void IndustrialProduct::warehouseIndValue(IndustrialProduct *products, int count
             cout << endl;
         }
     }
-    cout << "Total value of industrial products in " << searchLocation << " is: " << totalValue << endl;
+    cout << "Total value of industrial products in " << searchLocation << " is: " << totalValue << endl << endl;
 }
 
 void IndustrialProduct::input(int counter) {
     cout << "Data about industrial product N" << counter + 1 << endl;
     Product product;
     product.input();
+    set(product);
 
     string inTransport, inLocation;
     while (true) {
@@ -183,6 +183,7 @@ void IndustrialProduct::input(int counter) {
             cout << "You entered empty string. Please, try again." << endl;
         } else break;
     }
+    transport = inTransport;
 
     while (true) {
         cout << "Storage location: ";
@@ -191,12 +192,6 @@ void IndustrialProduct::input(int counter) {
             cout << "You entered empty string. Please, try again." << endl;
         } else break;
     }
-
-    name = product.getName();
-    productionDate = product.getProductionDate();
-    price = product.getPrice();
-    quantity = product.getQuantity();
-    transport = inTransport;
     location = inLocation;
 }
 
@@ -204,6 +199,13 @@ void IndustrialProduct::output() {
     this->Product::output();
     cout << "Transportation conditions: " << transport << endl;
     cout << "Storage location: " << location << endl;
+}
+
+void IndustrialProduct::set(Product &product){
+    name = product.getName();
+    productionDate = product.getProductionDate();
+    price = product.getPrice();
+    quantity = product.getQuantity();
 }
 
 FoodProduct::FoodProduct() {
@@ -239,17 +241,25 @@ void FoodProduct::input(int counter) {
     cout << "Data about food product N" << counter + 1 << endl;
     Product product;
     product.input();
+    set(product);
 
     string inDate;
-    while (true) {
-        cout << "Expiration date (DD/MM/YYYY): ";
-        getline(cin, inDate);
-        if (isValidDate(inDate)) break;
+    while(true) {
+        while (true) {
+            cout << "Expiration date (DD/MM/YYYY): ";
+            getline(cin, inDate);
+            if (isValidDate(inDate)) break;
+        }
+        if (isLater(productionDate, inDate)) {
+            cout << "Production date cannot be later than expiration date. Please, try again" << endl;
+        } else break;
     }
+    expirationDate = inDate;
+}
 
+void FoodProduct::set(Product &product){
     name = product.getName();
     productionDate = product.getProductionDate();
     price = product.getPrice();
     quantity = product.getQuantity();
-    expirationDate = inDate;
 }
