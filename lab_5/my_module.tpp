@@ -42,7 +42,6 @@ void Multiset<T>::insert(const T &element) {
     } else {
         y->right = newNode;
     }
-
     fixInsert(newNode);
     size++;
 }
@@ -93,22 +92,7 @@ bool Multiset<T>::isEmpty() const {
 }
 
 template<typename T>
-bool Multiset<T>::contains(const T &element) const {
-    Node *node = root;
-    while (node != nullptr) {
-        if (element < node->data) {
-            node = node->left;
-        } else if (element > node->data) {
-            node = node->right;
-        } else {
-            return true;
-        }
-    }
-    return false;
-}
-
-template<typename T>
-void Multiset<T>::remove(const T &element) {
+bool Multiset<T>::remove(const T &element) {
     Node *node = root;
     while (node != nullptr) {
         if (element < node->data) {
@@ -122,9 +106,10 @@ void Multiset<T>::remove(const T &element) {
                 deleteNode(node);
             }
             size--;
-            return;
+            return true;
         }
     }
+    return false;
 }
 
 template<typename T>
@@ -143,7 +128,6 @@ void Multiset<T>::outputSet() const {
             cout << it.value() << "(" << it.count() << ")" << ", ";
         }
     }
-    cout << endl;
 }
 
 template<typename T>
@@ -241,14 +225,12 @@ void Multiset<T>::deleteNode(Node *node) {
     delete node;
     size--;
 
-    if (!yOriginalColor) {
-        fixDelete(x);
-    }
+    if (!yOriginalColor) fixDelete(x);
 }
 
 template<typename T>
 void Multiset<T>::fixDelete(Node *node) {
-    while (node != root && (node == nullptr || !node->isRed)) {
+    while (node != nullptr && node != root && (!node->isRed)) {
         if (node == node->parent->left) {
             Node *sibling = node->parent->right;
             if (sibling->isRed) {
@@ -309,40 +291,26 @@ void Multiset<T>::fixDelete(Node *node) {
             }
         }
     }
-    if (node != nullptr) {
-        node->isRed = false;
-    }
+    if (node != nullptr) node->isRed = false;
 }
 
 template<typename T>
 void Multiset<T>::transplant(Node *u, Node *v) {
-    if (u->parent == nullptr) {
-        root = v;
-    } else if (u == u->parent->left) {
-        u->parent->left = v;
-    } else {
-        u->parent->right = v;
-    }
-    if (v != nullptr) {
-        v->parent = u->parent;
-    }
+    if (u->parent == nullptr) root = v;
+    else if (u == u->parent->left) u->parent->left = v;
+    else u->parent->right = v;
+    if (v != nullptr) v->parent = u->parent;
 }
 
 template<typename T>
 void Multiset<T>::rotateLeft(Node *node) {
     Node *rightChild = node->right;
     node->right = rightChild->left;
-    if (rightChild->left != nullptr) {
-        rightChild->left->parent = node;
-    }
+    if (rightChild->left != nullptr) rightChild->left->parent = node;
     rightChild->parent = node->parent;
-    if (node->parent == nullptr) {
-        root = rightChild;
-    } else if (node == node->parent->left) {
-        node->parent->left = rightChild;
-    } else {
-        node->parent->right = rightChild;
-    }
+    if (node->parent == nullptr) root = rightChild;
+    else if (node == node->parent->left) node->parent->left = rightChild;
+    else node->parent->right = rightChild;
     rightChild->left = node;
     node->parent = rightChild;
 }
@@ -351,26 +319,18 @@ template<typename T>
 void Multiset<T>::rotateRight(Node *node) {
     Node *leftChild = node->left;
     node->left = leftChild->right;
-    if (leftChild->right != nullptr) {
-        leftChild->right->parent = node;
-    }
+    if (leftChild->right != nullptr) leftChild->right->parent = node;
     leftChild->parent = node->parent;
-    if (node->parent == nullptr) {
-        root = leftChild;
-    } else if (node == node->parent->right) {
-        node->parent->right = leftChild;
-    } else {
-        node->parent->left = leftChild;
-    }
+    if (node->parent == nullptr) root = leftChild;
+    else if (node == node->parent->right) node->parent->right = leftChild;
+    else node->parent->left = leftChild;
     leftChild->right = node;
     node->parent = leftChild;
 }
 
 template<typename T>
 typename Multiset<T>::Node *Multiset<T>::minimum(Node *node) const {
-    while (node->left != nullptr) {
-        node = node->left;
-    }
+    while (node->left != nullptr) node = node->left;
     return node;
 }
 
@@ -386,46 +346,29 @@ void Multiset<T>::deleteTree(Node *node) {
 template<typename T>
 Multiset<T> Multiset<T>::intersect(const Multiset<T> &other) const {
     Multiset<T> result;
-    T *arr1 = new T[size];
-    T *arr2 = new T[other.size];
-    int size1 = 0;
-    int size2 = 0;
 
-    inorderTraversal(root, arr1, size1);
-
-    inorderTraversal(other.root, arr2, size2);
-
-    for (int i = 0; i < size1; i++) {
-        bool found = false;
-        for (int j = 0; j < size2; j++) {
-            if (arr1[i] == arr2[j]) {
-                found = true;
-                break;
+    Iterator it = getIterator();
+    for (it.begin(); !it.end(); it.next()) {
+        if (other.contains(it.value()) ) {
+            for (int i = 0; i < min(other.contains(it.value())->count, it.count()); i++){
+                result.insert(it.value());
             }
         }
-        if (found) {
-            result.insert(arr1[i]);
-        }
     }
-
-    delete[] arr1;
-    delete[] arr2;
-
     return result;
 }
 
 template<typename T>
-void Multiset<T>::inorderTraversal(Node *node, T *&values, int &size1) const {
-    if (node == nullptr) {
-        return;
-    }
-    inorderTraversal(node->left, values, size1);
-    for (int i = 0; i < node->count; i++) {
-        values[size1++] = node->data;
-    }
-    inorderTraversal(node->right, values, size1);
-}
+typename Multiset<T>::Node* Multiset<T>::contains(const T& value) const {
+    Node* current = root;
 
+    while (current != nullptr) {
+        if (value < current->data) current = current->left;
+        else if (value > current->data) current = current->right;
+        else return current;
+    }
+    return nullptr;
+}
 
 template<typename T>
 void handleMenuOptions(Multiset<T> &set) {
@@ -433,7 +376,7 @@ void handleMenuOptions(Multiset<T> &set) {
     T element;
 
     int n;
-    cout << "Amount of elements to enter:\n";
+    cout << "Amount of elements to enter: ";
     while (true) {
         cin >> n;
         cin.ignore();
@@ -461,10 +404,9 @@ void handleMenuOptions(Multiset<T> &set) {
         cout << "1. Insert element ";
         cout << "2. Check if set is empty ";
         cout << "3. Check if element belongs to set ";
-        cout << "4. Remove element\n";
+        cout << "4. Remove element" << endl;
         cout << "5. Intersection of two sets ";
-        cout << "6. Display set ";
-        cout << "7. Exit\n";
+        cout << "6. Display set " << endl;
         cout << "Enter your choice: ";
         cin >> option;
         if (cin.fail()) {
@@ -484,16 +426,13 @@ void handleMenuOptions(Multiset<T> &set) {
                     cout << "Invalid input. Please try again.\n";
                 } else {
                     set.insert(element);
-                    cout << "Element inserted.\n";
+                    cout << "Element inserted." << endl << endl;
                 }
                 break;
             }
             case 2: {
-                if (set.isEmpty()) {
-                    cout << "Set is empty.\n";
-                } else {
-                    cout << "Set is not empty.\n";
-                }
+                if (set.isEmpty()) cout << "Set is empty." << endl << endl;
+                else cout << "Set is not empty." << endl << endl;
                 break;
             }
             case 3: {
@@ -504,11 +443,8 @@ void handleMenuOptions(Multiset<T> &set) {
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Invalid input. Please try again.\n";
                 } else {
-                    if (set.contains(element)) {
-                        cout << "Element is present in the set.\n";
-                    } else {
-                        cout << "Element is not present in the set.\n";
-                    }
+                    if (set.contains(element)) cout << "Element is present in the set." << endl << endl;
+                    else cout << "Element is not present in the set." << endl << endl;
                 }
                 break;
             }
@@ -520,8 +456,8 @@ void handleMenuOptions(Multiset<T> &set) {
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Invalid input. Please try again.\n";
                 } else {
-                    set.remove(element);
-                    cout << "Element removed.\n";
+                    if(set.remove(element)) cout << "Element removed." << endl << endl;
+                    else cout << "Element is not in set." << endl << endl;
                     break;
                 }
             }
@@ -554,18 +490,14 @@ void handleMenuOptions(Multiset<T> &set) {
                 Multiset<T> intersectionSet = set.intersect(set2);
                 cout << "Intersection of the sets: ";
                 intersectionSet.outputSet();
-                cout << endl;
+                cout << endl << endl;
                 break;
             }
             case 6: {
                 cout << "Set: ";
                 set.outputSet();
-                cout << endl;
+                cout << endl << endl;
                 break;
-            }
-            case 7: {
-                cout << "Exiting...";
-                exit(0);
             }
             default: {
                 cout << "Invalid choice. Please try again.\n";

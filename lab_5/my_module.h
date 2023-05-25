@@ -39,9 +39,9 @@ public:
 
     bool isEmpty() const;
 
-    bool contains(const T &element) const;
+    Node *contains(const T &value) const;
 
-    void remove(const T &element);
+    bool remove(const T &element);
 
     Multiset<T> intersect(const Multiset<T> &other) const;
 
@@ -50,7 +50,6 @@ public:
     void outputSet() const;
 
     class Iterator {
-    private:
         Node *current;
 
     public:
@@ -70,8 +69,6 @@ public:
     Iterator getIterator() const;
 
 private:
-    void inorderTraversal(Node *node, T *&values, int &size1) const; // for intersect
-
     void copyTree(Node *node);
 
     void fixInsert(Node *newNode); // for insert
