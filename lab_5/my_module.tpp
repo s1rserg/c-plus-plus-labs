@@ -376,18 +376,19 @@ void handleMenuOptions(Multiset<T> &set) {
     T element;
 
     int n;
-    cout << "Amount of elements to enter: ";
     while (true) {
+        cout << "Amount of elements to enter: ";
         cin >> n;
         cin.ignore();
         if (cin.fail() || n < 0) {
             cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "Invalid input. Please try again.\n";
         } else break;
     }
     for (int i = 0; i < n; i++) {
-        cout << "Enter element " << i + 1 << " : ";
         while (true) {
+            cout << "Element " << i + 1 << ": ";
             cin >> element;
             if (cin.fail()) {
                 cin.clear();
