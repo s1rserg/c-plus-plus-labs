@@ -88,7 +88,7 @@ void Multiset<T>::fixInsert(Node *newNode) {
 
 template<typename T>
 bool Multiset<T>::isEmpty() const {
-    return size == 0;
+    return size <= 0;
 }
 
 template<typename T>
